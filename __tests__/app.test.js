@@ -33,11 +33,11 @@ describe("GET /api/topics", () => {
       .then(({ body }) => {
         const { topics } = body;
         topics.forEach((topic) => {
-            expect(topic).toMatchObject({
-                slug: expect.any(String),
-                description: expect.any(String)
-            })
-        })
+          expect(topic).toMatchObject({
+            slug: expect.any(String),
+            description: expect.any(String),
+          });
+        });
       });
   });
 });
@@ -48,8 +48,10 @@ describe("GET /api", () => {
       .get("/api")
       .expect(200)
       .then((response) => {
-        expect(response.headers['content-type']).toEqual('application/json; charset=utf-8')
-        expect(response.body).toEqual(expect.any(Object))
+        expect(response.headers["content-type"]).toEqual(
+          "application/json; charset=utf-8"
+        );
+        expect(response.body).toEqual(expect.any(Object));
       });
   });
 
@@ -60,9 +62,35 @@ describe("GET /api", () => {
       .then((response) => {
         expect(response.body).toEqual(endpoints);
       });
-  })
+  });
 });
 
-// test to check if it's a json object
-//2nd test to check if the content of the json object
-//responds with an object describing all available endpoints
+describe("GET /api/articles/:article_id", () => {
+    test
+  test("sends a 404 status and error message when given a valid but non-existent id", () => {
+    return request(app)
+      .get("/api/articles/999")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("team does not exist");
+      });
+  });
+  test('sends a 400 status and error message when given an invalid id', () => {
+    return request(app)
+      .get('/api/articles/not-an-article')
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request');
+      });
+  });
+  test('sends a single article to the client', () => {
+    return request(app)
+      .get('/api/articles/1')
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article.article_id).toBe(1);
+        expect(response.body.article.title).toBe('Living in the shadow of a great man');
+        expect(response.body.article.topic).toBe('mitch');
+      });
+  });
+});
