@@ -1,2 +1,6 @@
 node_modules
 .env.*
+view-dev-table.sql
+view-test-table.sql
+dev-table.txt
+test-table.txt
