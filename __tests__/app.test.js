@@ -14,7 +14,9 @@ afterAll(() => {
 
 describe("GET /api/topics", () => {
   test("should respond with a 404 status code with invalid endpoint", () => {
-    return request(app).get("/api/topix").expect(404);
+    return request(app).get("/api/topix").expect(404).then((response) => {
+      expect(response.body.msg).toBe("Not found")
+    });
   });
   test("should respond with an array with appropriate length", () => {
     return request(app)
@@ -32,6 +34,7 @@ describe("GET /api/topics", () => {
       .expect(200)
       .then(({ body }) => {
         const { topics } = body;
+        expect(topics).toHaveLength(3);
         topics.forEach((topic) => {
           expect(topic).toMatchObject({
             slug: expect.any(String),
@@ -66,7 +69,6 @@ describe("GET /api", () => {
 });
 
 describe("GET /api/articles/:article_id", () => {
-    test
   test("sends a 404 status and error message when given a valid but non-existent id", () => {
     return request(app)
       .get("/api/articles/999")
