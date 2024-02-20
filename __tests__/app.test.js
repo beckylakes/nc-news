@@ -54,7 +54,6 @@ describe("GET /api", () => {
         expect(response.headers["content-type"]).toEqual(
           "application/json; charset=utf-8"
         );
-        expect(response.body).toEqual(expect.any(Object));
       });
   });
 
@@ -74,7 +73,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/999")
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("team does not exist");
+        expect(response.body.msg).toBe("article does not exist");
       });
   });
   test('sends a 400 status and error message when given an invalid id', () => {
@@ -89,10 +88,16 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get('/api/articles/1')
       .expect(200)
-      .then((response) => {
-        expect(response.body.article.article_id).toBe(1);
-        expect(response.body.article.title).toBe('Living in the shadow of a great man');
-        expect(response.body.article.topic).toBe('mitch');
+      .then(({body}) => {
+        const { article } = body
+        expect(article.article_id).toBe(1);
+        expect(article.title).toBe('Living in the shadow of a great man');
+        expect(article.topic).toBe('mitch');
+        expect(article.author).toBe('butter_bridge');
+        expect(article.body).toBe('I find this existence challenging');
+        expect(article.created_at).toBe('2020-07-09T20:11:00.000Z');
+        expect(article.votes).toBe(100);
+        expect(article.article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700');
       });
   });
 });
