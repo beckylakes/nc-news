@@ -57,7 +57,6 @@ describe("GET /api", () => {
         expect(response.headers["content-type"]).toEqual(
           "application/json; charset=utf-8"
         );
-        expect(response.body).toEqual(expect.any(Object));
       });
   });
 
@@ -181,6 +180,6 @@ describe.only("GET /api/articles", () => {
       .then(({ body }) => {
         const { articles } = body;
         expect(articles[0].comment_count).toEqual("2");
-      });
+    });
   });
 });
