@@ -7,7 +7,7 @@ function selectArticleById(article_id) {
       if (result.rows.length === 0) {
         return Promise.reject({
           statusCode: 404,
-          msg: "article does not exist",
+          msg: "article not found",
         });
       }
       return result.rows[0];
