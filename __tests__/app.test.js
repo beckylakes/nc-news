@@ -76,7 +76,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/999")
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("article does not exist");
+        expect(response.body.msg).toBe("article not found");
       });
   });
   test("sends a 400 status and error message when given an invalid id", () => {
@@ -211,7 +211,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .then(({ body }) => {
         const { comments } = body;
         const sortedByDate = comments.map((comment) => {
-          return comment.created_at
+          return comment.created_at;
         });
         expect(sortedByDate).toBeSorted({ descending: true });
       });
@@ -221,7 +221,7 @@ describe("GET /api/articles/:article_id/comments", () => {
     return request(app)
       .get("/api/articles/999/comments")
       .expect(404)
-      .then(({body}) => {
+      .then(({ body }) => {
         expect(body.msg).toBe("article not found");
       });
   });
@@ -232,6 +232,15 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad request");
+      });
+  });
+
+  test("responds with 200 status even if there are no comments for the specified article (empty array)", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(0);
       });
   });
 });

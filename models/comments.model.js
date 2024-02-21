@@ -8,10 +8,7 @@ function selectCommentsPerArticleID(article_id) {
     )
     .then((result) => {
         if (result.rows.length === 0) {
-            return Promise.reject({
-              statusCode: 404,
-              msg: "article not found",
-            });
+            return []
           }
       return result.rows;
     })
