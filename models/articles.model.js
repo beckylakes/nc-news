@@ -14,15 +14,29 @@ function selectArticleById(article_id) {
     });
 }
 
-function selectAllArticles() {
-  return db
-    .query(
-      `
-SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.body) AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC`
-    )
-    .then((result) => {
-      return result.rows;
-    })
+function selectAllArticles(topic) {
+
+  let queryString = "SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.body) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id ";
+  const endOfQueryString = `GROUP BY articles.article_id ORDER BY articles.created_at DESC`
+  const queryValues = [];
+
+  if (topic) {
+    queryString += "WHERE articles.topic = $1 ";
+    queryValues.push(topic);
+  }
+  
+  queryString += endOfQueryString
+
+  return db.query(queryString, queryValues)
+  .then((result) => {
+    if(result.rows.length === 0){
+      return Promise.reject({
+        statusCode: 404,
+        msg: 'topic not found'
+      })
+    }
+    return result.rows;
+  })
 }
 
 function updateArticle(article_id, inc_votes) {
@@ -36,7 +50,7 @@ function updateArticle(article_id, inc_votes) {
     )
     .then((result) => {
       return result.rows[0];
-    })
+    });
 }
 
 module.exports = { selectArticleById, selectAllArticles, updateArticle };
