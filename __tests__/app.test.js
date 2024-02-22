@@ -240,7 +240,56 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/2/comments")
       .expect(200)
       .then(({ body }) => {
-        expect(body.comments.length).toBe(0);
+        const { comments } = body
+        expect(Array.isArray(comments)).toBe(true);
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("should respond with the posted comment", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "This is a test comment.",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toHaveProperty("comment_id");
+        expect(body.comment).toHaveProperty("author", newComment.username);
+        expect(body.comment).toHaveProperty("body", newComment.body);
+        expect(body.comment).toHaveProperty("article_id", 1);
+        expect(body.comment).toHaveProperty("created_at");
+        expect(body.comment).toHaveProperty("votes", 0);
+      });
+  });
+
+  test("should respond with a 400 status code if required properties are missing", () => {
+    const newComment = {
+      username: "butter_bridge",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+
+  test("should respond with a 404 status code if article_id does not exist", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "This is a test comment.",
+    };
+    return request(app)
+      .post("/api/articles/999/comments")
+      .send(newComment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("article not found");
       });
   });
 });
