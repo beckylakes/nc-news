@@ -1,17 +1,38 @@
 const db = require("../db/connection.js");
 
 function selectArticleById(article_id) {
-  return db
-    .query("SELECT * FROM articles WHERE article_id = $1;", [article_id])
-    .then((result) => {
-      if (result.rows.length === 0) {
-        return Promise.reject({
-          statusCode: 404,
-          msg: "article not found",
-        });
-      }
-      return result.rows[0];
-    });
+  let queryString = "SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.body, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.body) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id ";
+  const endOfQueryString = `GROUP BY articles.article_id ORDER BY articles.created_at DESC`
+  const queryValues = [];
+
+  if (article_id) {
+    queryString += "WHERE articles.article_id = $1 ";
+    queryValues.push(article_id);
+  }
+  
+  queryString += endOfQueryString
+
+  return db.query(queryString, queryValues)
+  .then((result) => {
+    if(result.rows.length === 0){
+      return Promise.reject({
+        statusCode: 404,
+        msg: 'article not found'
+      })
+    }
+    return result.rows;
+  })
+  // return db
+  //   .query("SELECT * FROM articles WHERE article_id = $1;", [article_id])
+  //   .then((result) => {
+  //     if (result.rows.length === 0) {
+  //       return Promise.reject({
+  //         statusCode: 404,
+  //         msg: "article not found",
+  //       });
+  //     }
+  //     return result.rows[0];
+  //   });
 }
 
 function selectAllArticles(topic) {

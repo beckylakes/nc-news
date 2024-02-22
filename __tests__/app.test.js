@@ -93,16 +93,25 @@ describe("GET /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const { article } = body;
-        expect(article.article_id).toBe(1);
-        expect(article.title).toBe("Living in the shadow of a great man");
-        expect(article.topic).toBe("mitch");
-        expect(article.author).toBe("butter_bridge");
-        expect(article.body).toBe("I find this existence challenging");
-        expect(article.created_at).toBe("2020-07-09T20:11:00.000Z");
-        expect(article.votes).toBe(100);
-        expect(article.article_img_url).toBe(
+        expect(article[0].article_id).toBe(1);
+        expect(article[0].title).toBe("Living in the shadow of a great man");
+        expect(article[0].topic).toBe("mitch");
+        expect(article[0].author).toBe("butter_bridge");
+        expect(article[0].body).toBe("I find this existence challenging");
+        expect(article[0].created_at).toBe("2020-07-09T20:11:00.000Z");
+        expect(article[0].votes).toBe(100);
+        expect(article[0].article_img_url).toBe(
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         );
+      });
+  });
+  test("should return article object with comment count at specified article_id", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article[0]).toHaveProperty("comment_count");
       });
   });
 });
@@ -189,29 +198,29 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles.length).toBe(12)
+        expect(articles.length).toBe(12);
         articles.forEach((article) => {
-          expect(article.topic).toEqual("mitch")
-        })
+          expect(article.topic).toEqual("mitch");
+        });
       });
-  })
+  });
 
   test("should respond with 404 status if given non-existent topic query", () => {
     return request(app)
-    .get("/api/articles?topic=mith")
-    .expect(404)
-    .then((response) => {
-      expect(response.body.msg).toBe("topic not found");
-    })
-  })
+      .get("/api/articles?topic=mith")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("topic not found");
+      });
+  });
 
   test("should respond with 404 status if given invalid topic query", () => {
-  return request(app)
-  .get("/api/articles?topic=1")
-  .expect(404)
-  .then((response) => {
-    expect(response.body.msg).toBe("topic not found");
-  })
+    return request(app)
+      .get("/api/articles?topic=1")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("topic not found");
+      });
   });
 });
 
@@ -513,4 +522,4 @@ describe("GET /api/users", () => {
         expect(response.body.msg).toBe("Not found");
       });
   });
-})
+});
