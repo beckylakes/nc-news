@@ -10,7 +10,7 @@
     }
   },
   "GET /api/articles/:articleid": {
-    "description": "serves an article object of the requested id",
+    "description": "serves an article object of the requested id with comment_count added",
     "queries": ["article_id"],
     "exampleResponse": {
       "article": {
