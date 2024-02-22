@@ -191,9 +191,10 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body }) => {
         const { comments } = body;
-        expect(Array.isArray(comments)).toBe(true);
+        const commentArray = comments[1]
+        expect(Array.isArray(commentArray)).toBe(true);
         expect(comments.length).toBeGreaterThan(0);
-        comments.forEach((comment) => {
+        commentArray.forEach((comment) => {
           expect(comment).toHaveProperty("comment_id");
           expect(comment).toHaveProperty("votes");
           expect(comment).toHaveProperty("created_at");
@@ -240,7 +241,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/2/comments")
       .expect(200)
       .then(({ body }) => {
-        const { comments } = body
+        const { comments } = body;
         expect(Array.isArray(comments)).toBe(true);
       });
   });
@@ -257,16 +258,17 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(201)
       .then(({ body }) => {
-        expect(body.comment).toHaveProperty("comment_id");
-        expect(body.comment).toHaveProperty("author", newComment.username);
-        expect(body.comment).toHaveProperty("body", newComment.body);
-        expect(body.comment).toHaveProperty("article_id", 1);
-        expect(body.comment).toHaveProperty("created_at");
-        expect(body.comment).toHaveProperty("votes", 0);
+        const { comment } = body
+        expect(comment[1]).toHaveProperty("comment_id");
+        expect(comment[1]).toHaveProperty("author");
+        expect(comment[1]).toHaveProperty("body");
+        expect(comment[1]).toHaveProperty("article_id", 1);
+        expect(comment[1]).toHaveProperty("created_at");
+        expect(comment[1]).toHaveProperty("votes", 0);
       });
   });
 
-  test("should respond with a 400 status code if required properties are missing", () => {
+  test("should respond with a 400 status code if any required properties from body are missing", () => {
     const newComment = {
       username: "butter_bridge",
     };
@@ -276,6 +278,45 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad request");
+      });
+  });
+
+  test("should ignore extra key if extra keys are found on body", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "This is a test comment.",
+      extraKey: "This is extra",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then((response) => {
+        const { comment } = response.body
+        expect(comment[1]).toMatchObject({
+          comment_id: 19,
+          body: 'This is a test comment.',
+          article_id: 1,
+          author: 'butter_bridge',
+          votes: 0,
+          created_at: expect.any(String)
+        })
+        expect(comment[1]).not.toHaveProperty("extraKey")
+      });
+  });
+
+  test("should respond with a 400 status code if invalid article_id", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "This is a test comment.",
+    };
+    return request(app)
+      .post("/api/articles/invalid_article/comments")
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        const { body } = response;
+        expect(body.msg).toBe("Bad request");
       });
   });
 
@@ -290,6 +331,77 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("article not found");
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("should respond with the updated article with correct vote incrementation total", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article.article_id).toBe(1);
+        expect(article.votes).toBe(101);
+      });
+  });
+  test("should respond with object with expected properties", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article.article_id).toBe(1);
+        expect(article.title).toBe("Living in the shadow of a great man");
+        expect(article.topic).toBe("mitch");
+        expect(article.author).toBe("butter_bridge");
+        expect(article.body).toBe("I find this existence challenging");
+        expect(article.created_at).toBe("2020-07-09T20:11:00.000Z");
+        expect(article.votes).toBe(101);
+        expect(article.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+      });
+  });
+  test("should not change the article's vote count if inc_votes is 0", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 0 })
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article.votes).toBe(100);
+      });
+  });
+  test("should decrement the article's vote count if inc_votes is a negative number", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -10 })
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article.votes).toBe(90);
+      });
+  });
+  test("should respond with a 404 status code if article_id does not exist", () => {
+    return request(app)
+      .patch("/api/articles/999")
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article not found");
+      });
+  });
+  test("should respond with a 400 status code if article_id is invalid", () => {
+    return request(app)
+      .patch("/api/articles/not-an-article")
+      .send({ inc_votes: 1 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
       });
   });
 });

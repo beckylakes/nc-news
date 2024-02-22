@@ -18,9 +18,6 @@ function insertComment(article_id, username, body) {
       [article_id, username, body]
     )
     .then((result) => {
-      if (result.rows.length === 0) {
-        return Promise.reject();
-      }
       return result.rows[0];
     });
 }
