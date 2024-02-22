@@ -191,7 +191,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body }) => {
         const { comments } = body;
-        const commentArray = comments[1]
+        const commentArray = comments[1];
         expect(Array.isArray(commentArray)).toBe(true);
         expect(comments.length).toBeGreaterThan(0);
         commentArray.forEach((comment) => {
@@ -258,7 +258,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(201)
       .then(({ body }) => {
-        const { comment } = body
+        const { comment } = body;
         expect(comment[1]).toHaveProperty("comment_id");
         expect(comment[1]).toHaveProperty("author");
         expect(comment[1]).toHaveProperty("body");
@@ -292,16 +292,16 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(201)
       .then((response) => {
-        const { comment } = response.body
+        const { comment } = response.body;
         expect(comment[1]).toMatchObject({
           comment_id: 19,
-          body: 'This is a test comment.',
+          body: "This is a test comment.",
           article_id: 1,
-          author: 'butter_bridge',
+          author: "butter_bridge",
           votes: 0,
-          created_at: expect.any(String)
-        })
-        expect(comment[1]).not.toHaveProperty("extraKey")
+          created_at: expect.any(String),
+        });
+        expect(comment[1]).not.toHaveProperty("extraKey");
       });
   });
 
@@ -402,6 +402,46 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("should respond with 400 status if inc_votes is missing or not a number", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes_is_missing: 0 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("should respond with 400 status if inc_votes is missing or not a number", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "zero" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("should respond with status 204 and comment should be deleted (no return)", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  test("should respond with status 404 when given a non-existent id", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("comment does not exist");
+      });
+  });
+  test("should respond with status 400 when given an invalid id", () => {
+    return request(app)
+      .delete("/api/comments/not-a-comment")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
       });
   });
 });

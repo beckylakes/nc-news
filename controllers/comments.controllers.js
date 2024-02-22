@@ -1,7 +1,10 @@
 const db = require("../db/connection.js");
-const { selectCommentsPerArticleID } = require("../models/comments.model.js");
+const {
+  selectCommentsPerArticleID,
+  insertComment,
+  deleteComment,
+} = require("../models/comments.model.js");
 const { selectArticleById } = require("../models/articles.model.js");
-const { insertComment } = require("../models/comments.model.js");
 
 function getCommentsPerArticleID(req, res, next) {
   const { article_id } = req.params;
@@ -32,4 +35,14 @@ function postComment(req, res, next) {
     });
 }
 
-module.exports = { getCommentsPerArticleID, postComment };
+function deleteCommentById(req, res, next) {
+  const { comment_id } = req.params;
+  return deleteComment(comment_id)
+  .then(() => {
+    res.status(204).send()
+  }).catch((err) => {
+    next(err)
+  })
+}
+
+module.exports = { getCommentsPerArticleID, postComment, deleteCommentById };
