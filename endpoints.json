@@ -79,5 +79,8 @@
         }
       
     }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "Updates an article specified by article_id. Request body accepts an object with inc_votes property, indicating how much the votes property in the database should be updated by."
   }
 }
