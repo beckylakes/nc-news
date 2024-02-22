@@ -446,7 +446,7 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-describe.only("CORE: GET /api/users", () => {
+describe("GET /api/users", () => {
   test("should respond with an array of users", () => {
     return request(app)
       .get("/api/users")
@@ -474,7 +474,7 @@ describe.only("CORE: GET /api/users", () => {
       });
   });
 
-  test.only("should respond with a 404 status code with invalid endpoint", () => {
+  test("should respond with a 404 status code with invalid endpoint", () => {
     return request(app)
       .get("/api/userz")
       .expect(404)
