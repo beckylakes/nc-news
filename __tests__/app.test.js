@@ -124,7 +124,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles).toHaveLength(5);
+        expect(articles).toHaveLength(13);
         articles.forEach((article) => {
           expect(article).toMatchObject({
             article_id: expect.any(Number),
@@ -166,7 +166,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles).toHaveLength(5);
+        expect(articles).toHaveLength(13);
         articles.forEach((article) => {
           expect(article).not.toHaveProperty("body");
         });
@@ -181,6 +181,37 @@ describe("GET /api/articles", () => {
         const { articles } = body;
         expect(articles[0].comment_count).toEqual("2");
       });
+  });
+
+  test("should respond with 200 status and articles that correspond with the specified topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(12)
+        articles.forEach((article) => {
+          expect(article.topic).toEqual("mitch")
+        })
+      });
+  })
+
+  test("should respond with 404 status if given non-existent topic query", () => {
+    return request(app)
+    .get("/api/articles?topic=mith")
+    .expect(404)
+    .then((response) => {
+      expect(response.body.msg).toBe("topic not found");
+    })
+  })
+
+  test("should respond with 404 status if given invalid topic query", () => {
+  return request(app)
+  .get("/api/articles?topic=1")
+  .expect(404)
+  .then((response) => {
+    expect(response.body.msg).toBe("topic not found");
+  })
   });
 });
 
