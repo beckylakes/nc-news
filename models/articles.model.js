@@ -23,9 +23,6 @@ SELECT articles.article_id, articles.author, articles.title, articles.topic, art
     .then((result) => {
       return result.rows;
     })
-    .catch((err) => {
-      console.log(err);
-    });
 }
 
 function updateArticle(article_id, inc_votes) {
