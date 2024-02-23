@@ -222,6 +222,17 @@ describe("GET /api/articles", () => {
         expect(response.body.msg).toBe("topic not found");
       });
   });
+
+  test("should respond with 200 status and empty array when topic exists, but has no associated articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(Array.isArray(articles)).toBe(true)
+        expect(articles.length).toBe(0);
+      });
+  })
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
