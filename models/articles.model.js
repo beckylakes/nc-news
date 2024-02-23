@@ -6,10 +6,8 @@ function selectArticleById(article_id) {
   const endOfQueryString = `GROUP BY articles.article_id ORDER BY articles.created_at DESC`;
   const queryValues = [];
 
-  if (article_id) {
-    queryString += "WHERE articles.article_id = $1 ";
-    queryValues.push(article_id);
-  }
+  queryString += "WHERE articles.article_id = $1 ";
+  queryValues.push(article_id);
 
   queryString += endOfQueryString;
 
