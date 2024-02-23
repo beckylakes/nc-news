@@ -22,9 +22,16 @@ function selectArticleById(article_id) {
   });
 }
 
-function selectAllArticles(topic) {
-  const validTopics = ["mitch", "cat", "paper"];
-  
+async function selectAllArticles(topic) {
+  const validTopics = [];
+
+  await db.query(`SELECT slug FROM topics`)
+  .then((result) => {
+    result.rows.forEach((topic) => {
+      validTopics.push(topic.slug);
+    });
+  });
+
   if (!validTopics.includes(topic) && topic !== undefined) {
     return Promise.reject({
       statusCode: 404,
