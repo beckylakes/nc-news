@@ -383,8 +383,8 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const { article } = body;
-        expect(article.article_id).toBe(1);
-        expect(article.votes).toBe(101);
+        expect(article[1].article_id).toBe(1);
+        expect(article[1].votes).toBe(101);
       });
   });
   test("should respond with object with expected properties", () => {
@@ -394,14 +394,14 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const { article } = body;
-        expect(article.article_id).toBe(1);
-        expect(article.title).toBe("Living in the shadow of a great man");
-        expect(article.topic).toBe("mitch");
-        expect(article.author).toBe("butter_bridge");
-        expect(article.body).toBe("I find this existence challenging");
-        expect(article.created_at).toBe("2020-07-09T20:11:00.000Z");
-        expect(article.votes).toBe(101);
-        expect(article.article_img_url).toBe(
+        expect(article[1].article_id).toBe(1);
+        expect(article[1].title).toBe("Living in the shadow of a great man");
+        expect(article[1].topic).toBe("mitch");
+        expect(article[1].author).toBe("butter_bridge");
+        expect(article[1].body).toBe("I find this existence challenging");
+        expect(article[1].created_at).toBe("2020-07-09T20:11:00.000Z");
+        expect(article[1].votes).toBe(101);
+        expect(article[1].article_img_url).toBe(
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         );
       });
@@ -413,7 +413,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const { article } = body;
-        expect(article.votes).toBe(100);
+        expect(article[1].votes).toBe(100);
       });
   });
   test("should decrement the article's vote count if inc_votes is a negative number", () => {
@@ -423,7 +423,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const { article } = body;
-        expect(article.votes).toBe(90);
+        expect(article[1].votes).toBe(90);
       });
   });
   test("should respond with a 404 status code if article_id does not exist", () => {
@@ -444,16 +444,29 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-  test("should respond with 400 status if inc_votes is missing or not a number", () => {
+  test("should respond with 200 status and return original single article object if inc_votes is missing", () => {
+    const testArticle = {
+    "article_id": 1,
+    "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    "author": "butter_bridge",
+    "body": "I find this existence challenging",
+    "comment_count": "11",
+    "created_at": "2020-07-09T20:11:00.000Z",
+    "title": "Living in the shadow of a great man",
+    "topic": "mitch",
+    "votes": 100
+    };
+  
     return request(app)
       .patch("/api/articles/1")
-      .send({ inc_votes_is_missing: 0 })
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
+      .send({})
+      .expect(200)
+      .then(({body}) => {
+        const {article} = body
+        expect(article[0]).toEqual(testArticle);
       });
   });
-  test("should respond with 400 status if inc_votes is missing or not a number", () => {
+  test("should respond with 400 status if inc_votes is not a number", () => {
     return request(app)
       .patch("/api/articles/1")
       .send({ inc_votes: "zero" })

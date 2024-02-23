@@ -2,7 +2,7 @@ const db = require("../db/connection.js");
 const {
   selectArticleById,
   selectAllArticles,
-  updateArticle
+  updateArticle,
 } = require("../models/articles.model.js");
 
 function getArticleById(req, res, next) {
@@ -17,7 +17,7 @@ function getArticleById(req, res, next) {
 }
 
 function getAllArticles(req, res, next) {
-  const { topic } = req.query
+  const { topic } = req.query;
   return selectAllArticles(topic)
     .then((articles) => {
       res.status(200).send({ articles });
@@ -30,10 +30,21 @@ function getAllArticles(req, res, next) {
 function patchArticle(req, res, next) {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
-  return selectArticleById(article_id)
-    .then(() => {
-      return updateArticle(article_id, inc_votes);
+
+  if(inc_votes === undefined){
+    return selectArticleById(article_id)
+    .then((article) => {
+      res.status(200).send({article})
     })
+    .catch((err) => {
+      next(err)
+    })
+  }
+
+  return Promise.all([
+    selectArticleById(article_id),
+    updateArticle(article_id, inc_votes),
+  ])
     .then((article) => {
       res.status(200).send({ article });
     })
