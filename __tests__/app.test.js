@@ -446,23 +446,24 @@ describe("PATCH /api/articles/:article_id", () => {
   });
   test("should respond with 200 status and return original single article object if inc_votes is missing", () => {
     const testArticle = {
-    "article_id": 1,
-    "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-    "author": "butter_bridge",
-    "body": "I find this existence challenging",
-    "comment_count": "11",
-    "created_at": "2020-07-09T20:11:00.000Z",
-    "title": "Living in the shadow of a great man",
-    "topic": "mitch",
-    "votes": 100
+      article_id: 1,
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      author: "butter_bridge",
+      body: "I find this existence challenging",
+      comment_count: "11",
+      created_at: "2020-07-09T20:11:00.000Z",
+      title: "Living in the shadow of a great man",
+      topic: "mitch",
+      votes: 100,
     };
-  
+
     return request(app)
       .patch("/api/articles/1")
       .send({})
       .expect(200)
-      .then(({body}) => {
-        const {article} = body
+      .then(({ body }) => {
+        const { article } = body;
         expect(article[0]).toEqual(testArticle);
       });
   });
@@ -526,10 +527,12 @@ describe("GET /api/users", () => {
         });
       });
   });
+});
 
-  test("should respond with a 404 status code with invalid endpoint", () => {
+describe("Invalid endpoints /api/*", () => {
+  test("should return 404 if given an invalid endpoint", () => {
     return request(app)
-      .get("/api/userz")
+      .get("/api/anythingthatdoesnotexist")
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("Not found");
