@@ -41,7 +41,7 @@ async function selectAllArticles(topic, sort_by = "created_at", order = "DESC") 
 
   let queryString =
     "SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.body) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id ";
-  const endOfQueryString = `GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+  const endOfQueryString = `GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order}`;
   const queryValues = [];
 
   if (validTopics.includes(topic)) {
