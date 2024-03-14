@@ -143,7 +143,7 @@ describe("GET /api/articles", () => {
             created_at: expect.any(String),
             votes: expect.any(Number),
             article_img_url: expect.any(String),
-            comment_count: expect.any(String),
+            comment_count: expect.any(Number),
           });
         });
       });
@@ -188,7 +188,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles[0].comment_count).toEqual("2");
+        expect(articles[0].comment_count).toEqual(2);
       });
   });
 
