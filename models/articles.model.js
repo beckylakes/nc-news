@@ -22,7 +22,7 @@ function selectArticleById(article_id) {
   });
 }
 
-async function selectAllArticles(topic) {
+async function selectAllArticles(topic, sort_by = "created_at", order = "DESC") {
   const validTopics = [];
 
   await db.query(`SELECT slug FROM topics`)
@@ -41,7 +41,7 @@ async function selectAllArticles(topic) {
 
   let queryString =
     "SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.body) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id ";
-  const endOfQueryString = `GROUP BY articles.article_id ORDER BY articles.created_at DESC`;
+  const endOfQueryString = `GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
   const queryValues = [];
 
   if (validTopics.includes(topic)) {
