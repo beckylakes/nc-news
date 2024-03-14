@@ -27,6 +27,8 @@ async function selectAllArticles(
   sort_by = "created_at",
   order = "DESC"
 ) {
+
+
   const validSortBy = [
     "author",
     "title",
@@ -60,7 +62,7 @@ async function selectAllArticles(
   ) {
     return Promise.reject({
       status: 400,
-      msg: "Invalid queries",
+      msg: "Invalid queries!",
     });
   }
 
@@ -84,7 +86,7 @@ async function selectAllArticles(
     queryValues.push(topic);
   }
 
-  queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by.toLowerCase()} ${order.toUpperCase()}`;
+  queryString += ` GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order}`;
 
 
   // let queryString =

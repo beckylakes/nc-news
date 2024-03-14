@@ -4,6 +4,7 @@ const {
   selectAllArticles,
   updateArticle,
 } = require("../models/articles.model.js");
+// const { fetchTopicBySlug } = require("../models/topics.model.js");
 
 function getArticleById(req, res, next) {
   const { article_id } = req.params;
@@ -18,9 +19,9 @@ function getArticleById(req, res, next) {
 
 function getAllArticles(req, res, next) {
   const { topic, sort_by, order } = req.query;
-  return selectAllArticles(topic)
-    .then((articles) => {
-      res.status(200).send({ articles });
+  return selectAllArticles(topic, sort_by, order)
+    .then((resolutions) => {
+      res.status(200).send({ articles: resolutions });
     })
     .catch((err) => {
       next(err);
