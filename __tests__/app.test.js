@@ -93,7 +93,6 @@ describe("GET /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const { article } = body;
-        console.log(article)
         expect(article[0].article_id).toBe(1);
         expect(article[0].title).toBe("Living in the shadow of a great man");
         expect(article[0].topic).toBe("mitch");
@@ -198,7 +197,6 @@ describe("GET /api/articles", () => {
       .get("/api/articles?topic=mitch")
       .expect(200)
       .then(({ body }) => {
-        console.log(body)
         const { articles } = body;
         expect(articles.length).toBe(12);
         articles.forEach((article) => {
@@ -311,7 +309,6 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(201)
       .then(({ body }) => {
-        console.log(body)
         const { comment } = body;
         expect(comment[1]).toHaveProperty("comment_id");
         expect(comment[1]).toHaveProperty("author");
