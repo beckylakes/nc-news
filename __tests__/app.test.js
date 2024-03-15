@@ -124,8 +124,9 @@ describe("GET /api/articles", () => {
       .then(({ body }) => {
         const { articles } = body;
         expect(Array.isArray(articles)).toBe(true);
-      });
+      })
   });
+  
 
   test("each article should have the required properties", () => {
     return request(app)
