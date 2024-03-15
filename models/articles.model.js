@@ -22,11 +22,14 @@ function selectArticleById(article_id) {
   });
 }
 
-async function selectAllArticles(topic, sort_by = "created_at", order = "DESC") {
+async function selectAllArticles(
+  topic,
+  sort_by = "created_at",
+  order = "DESC"
+) {
   const validTopics = [];
 
-  await db.query(`SELECT slug FROM topics`)
-  .then((result) => {
+  await db.query(`SELECT slug FROM topics`).then((result) => {
     result.rows.forEach((topic) => {
       validTopics.push(topic.slug);
     });
@@ -38,6 +41,26 @@ async function selectAllArticles(topic, sort_by = "created_at", order = "DESC") 
       msg: "topic not found",
     });
   }
+  const validSortBys = [
+    "author",
+    "title",
+    "article_id",
+    "topic",
+    "created_at",
+    "votes",
+    "article_img_url",
+    "comment_count",
+  ];
+  const validOrderBys = ["ASC", "DESC"];
+  if (
+		!validSortBys.includes(sort_by.toLowerCase()) ||
+		!validOrderBys.includes(order.toUpperCase())
+	) {
+		return Promise.reject({
+			status: 400,
+			msg: "Invalid queries",
+		});
+	}
 
   let queryString =
     "SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.body) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id ";
