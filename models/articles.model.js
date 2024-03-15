@@ -22,12 +22,7 @@ function selectArticleById(article_id) {
   });
 }
 
-async function selectAllArticles(
-  topic,
-  sort_by = "created_at",
-  order = "DESC"
-) {
-
+async function selectAllArticles(topic, sort_by = "created_at", order = "DESC") {
 
   const validSortBy = [
     "author",
@@ -57,8 +52,8 @@ async function selectAllArticles(
   }
 
   if (
-    !validSortBy.includes(sort_by.toLowerCase()) ||
-    !validOrderQueries.includes(order.toUpperCase())
+    !validSortBy.includes(sort_by) ||
+    !validOrderQueries.includes(order)
   ) {
     return Promise.reject({
       status: 400,
@@ -86,7 +81,34 @@ async function selectAllArticles(
     queryValues.push(topic);
   }
 
-  queryString += ` GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order}`;
+  queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+
+  
+  return db.query(queryString, queryValues).then((result) => {
+    return result.rows;
+  });
+}
+
+function updateArticle(article_id, inc_votes) {
+  return db
+  .query(
+      `UPDATE articles 
+      SET votes = votes + $1 
+      WHERE article_id = $2 
+      RETURNING *;`,
+      [inc_votes, article_id]
+      )
+      .then((result) => {
+        return result.rows[0];
+    });
+}
+
+module.exports = { selectArticleById, selectAllArticles, updateArticle };
+
+
+
+
+
 
 
   // let queryString =
@@ -100,24 +122,3 @@ async function selectAllArticles(
   // }
 
   // queryString += endOfQueryString;
-
-  return db.query(queryString, queryValues).then((result) => {
-    return result.rows;
-  });
-}
-
-function updateArticle(article_id, inc_votes) {
-  return db
-    .query(
-      `UPDATE articles 
-    SET votes = votes + $1 
-    WHERE article_id = $2 
-    RETURNING *;`,
-      [inc_votes, article_id]
-    )
-    .then((result) => {
-      return result.rows[0];
-    });
-}
-
-module.exports = { selectArticleById, selectAllArticles, updateArticle };
