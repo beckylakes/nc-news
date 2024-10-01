@@ -4,7 +4,7 @@ Welcome to my first backend project at Northcoders Bootcamp!
 It's all thanks to my fantastic tutors & cohort at Northcoders for making this a great experience.
 
 ## Project Summary 📚
-The Northcoders News API is a backend service for the purpose of accessing application data programmatically. Whilst providing information for front-end purposes, this project also aims to mimic the functionality of real-world platforms like Reddit, allowing users to interact with articles, comments, topics, and more!
+The Northcoders News API is a RESTful backend service for the purpose of accessing application data programmatically. Whilst providing information for front-end purposes, this project also aims to mimic the functionality of real-world platforms like Reddit, allowing users to interact with articles, comments, topics, and more!
 
 The database for this project will be PSQL, and we will interact with it using node-postgres.
 
